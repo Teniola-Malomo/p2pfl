@@ -1,4 +1,4 @@
-FROM python:3.9-slim
+FROM python:3.10-slim
 
 WORKDIR /app
 
@@ -13,7 +13,11 @@ ENV PYTHONUNBUFFERED=1 \
     POETRY_VIRTUALENVS_CREATE=false \
     HOME=/app
 
-# Update and install dependencies
+# Update and install build dependencies required for some packages
+RUN apt-get update && \
+    apt-get install -y gcc python3-dev build-essential && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
 
 # Install Poetry
 RUN pip install "poetry==$POETRY_VERSION"
