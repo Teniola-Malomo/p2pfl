@@ -1,0 +1,52 @@
+version: "3.8"
+
+services:
+  node1:
+    image: p2pfl-deploy
+    container_name: node1
+    restart: unless-stopped
+    networks:
+      p2pfl-net:
+        ipv4_address: 172.20.0.2
+    command: >
+      python p2pfl/examples/node1.py
+      --host 172.20.0.2
+      --port 5001
+      --wait_peers 2
+
+  node2:
+    image: p2pfl-deploy
+    container_name: node2
+    restart: unless-stopped
+    depends_on:
+      - node1
+    networks:
+      p2pfl-net:
+        ipv4_address: 172.20.0.3
+    command: >
+      python p2pfl/examples/node2.py
+      --host 172.20.0.3
+      --port 5002
+      --connect 172.20.0.2:5001
+
+  node3:
+    image: p2pfl-deploy
+    container_name: node3
+    restart: unless-stopped
+    depends_on:
+      - node1
+    networks:
+      p2pfl-net:
+        ipv4_address: 172.20.0.4
+    command: >
+      python p2pfl/examples/node3.py
+      --host 172.20.0.4
+      --port 5003
+      --connect 172.20.0.2:5001
+
+networks:
+  p2pfl-net:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.20.0.0/16

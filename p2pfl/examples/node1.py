@@ -20,7 +20,7 @@ def __get_args():
 
 def node1(host: str, port: int, wait_peers: int):
     address = f"{host}:{port}"
-    print(f"🟢 Node1 starting at {address}")
+    print(f"Node1 starting at {address}")
 
     node = Node(
         LightningModel(MLP()),
@@ -31,12 +31,12 @@ def node1(host: str, port: int, wait_peers: int):
 
     node.start()
 
-    print("⏳ Waiting for peers...")
-    while len(node.get_neighbors()) < 1:
-        print(f"🔗 Known peers so far: {node.get_neighbors()}")
-        time.sleep(2)
+    print(f"Waiting for {wait_peers} peers...")
+    while len(node.get_neighbors().keys()) < wait_peers:
+        print(f"🔗 Known peers so far: {node.get_neighbors().keys()}")
+        time.sleep(7)
 
-    print("✅ Enough peers connected. 🚀 Starting federated learning")
+    print("Enough peers connected. Starting federated learning")
     node.set_start_learning(rounds=2, epochs=1)
 
     while True:
@@ -44,7 +44,7 @@ def node1(host: str, port: int, wait_peers: int):
         if node.state.round is None:
             break
 
-    print("🛑 Node1 finished. Stopping.")
+    print("Node1 finished. Stopping.")
     node.stop()
 
 
