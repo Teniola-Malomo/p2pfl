@@ -1,28 +1,5 @@
-#
-# This file is part of the federated_learning_p2p (p2pfl) distribution
-# (see https://github.com/pguijas/p2pfl).
-# Copyright (c) 2022 Pedro Guijas Bravo.
-#
-# This program is free software: you can redistribute it and/or modify
-# it under the terms of the GNU General Public License as published by
-# the Free Software Foundation, version 3.
-#
-# This program is distributed in the hope that it will be useful, but
-# WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
-# General Public License for more details.
-#
-# You should have received a copy of the GNU General Public License
-# along with this program. If not, see <http://www.gnu.org/licenses/>.
-#
-
-"""
-Example of a P2PFL MNIST node using a MLP model and a MnistFederatedDM.
-
-This node only starts, create a node2 and connect to it in order to start the federated learning process.
-"""
-
 import argparse
+import time
 
 from p2pfl.learning.dataset.p2pfl_dataset import P2PFLDataset
 from p2pfl.learning.frameworks.pytorch.lightning_learner import LightningLearner
@@ -33,28 +10,44 @@ from p2pfl.utils.utils import set_test_settings
 set_test_settings()
 
 
-def __get_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(description="P2PFL MNIST node using a MLP model and a MnistFederatedDM.")
-    parser.add_argument("--port", type=int, help="The port.", required=True)
+def __get_args():
+    parser = argparse.ArgumentParser(description="P2PFL Node1 (active starter node)")
+    parser.add_argument("--host", type=str, required=True, help="Host IP of this node")
+    parser.add_argument("--port", type=int, required=True, help="Port to bind")
+    parser.add_argument("--wait_peers", type=int, default=1, help="Number of peers to wait before starting learning")
     return parser.parse_args()
 
 
-def node1(port: int) -> None:
-    """
-    Start a node1 and waits for a key press to stop it.
+def node1(host: str, port: int, wait_peers: int):
+    address = f"{host}:{port}"
+    print(f"🟢 Node1 starting at {address}")
 
-    Args:
-        port: The port where the node will be listening.
+    node = Node(
+        LightningModel(MLP()),
+        P2PFLDataset.from_huggingface("p2pfl/MNIST"),
+        address=address,
+        learner=LightningLearner
+    )
 
-    """
-    node = Node(LightningModel(MLP()), P2PFLDataset.from_huggingface("p2pfl/MNIST"), address=f"127.0.0.1:{port}", learner=LightningLearner)
     node.start()
 
-    input("Press any key to stop\n")
+    print("⏳ Waiting for peers...")
+    while len(node.get_neighbors()) < 1:
+        print(f"🔗 Known peers so far: {node.get_neighbors()}")
+        time.sleep(2)
 
+    print("✅ Enough peers connected. 🚀 Starting federated learning")
+    node.set_start_learning(rounds=2, epochs=1)
+
+    while True:
+        time.sleep(1)
+        if node.state.round is None:
+            break
+
+    print("🛑 Node1 finished. Stopping.")
     node.stop()
 
 
 if __name__ == "__main__":
     args = __get_args()
-    node1(args.port)
+    node1(args.host, args.port, args.wait_peers)

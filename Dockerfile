@@ -30,3 +30,11 @@ RUN poetry run pip install torch==2.2.2 torchvision==0.17.2 --index-url https://
 
 # Install torchmetrics and pytorch-lightning
 RUN poetry run pip install torchmetrics==1.4.0.post0 pytorch-lightning==1.9.5
+
+RUN pip install "p2pfl[torch]"
+
+# Expose the default port
+EXPOSE 5001
+
+# Run with a default port (or override with Docker command args)
+CMD ["python", "p2pfl/examples/node1.py", "--port", "5001"]

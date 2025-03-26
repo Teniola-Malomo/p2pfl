@@ -33,43 +33,41 @@ from p2pfl.utils.utils import set_test_settings
 
 set_test_settings()
 
-
-def __get_args() -> argparse.Namespace:
-    parser = argparse.ArgumentParser(description="P2PFL MNIST node using a MLP model and a MnistFederatedDM.")
-    parser.add_argument("--port", type=int, help="The port to connect.", required=True)
+def __get_args():
+    parser = argparse.ArgumentParser(description="P2PFL Node2 (peer node)")
+    parser.add_argument("--host", type=str, required=True, help="Host IP of this node")
+    parser.add_argument("--port", type=int, required=True, help="Port to bind")
+    parser.add_argument("--connect", type=str, required=True, help="Node1 address to connect to (ip:port)")
     return parser.parse_args()
 
+def node2(host: str, port: int, connect_to: str):
+    address = f"{host}:{port}"
+    print(f"🟢 Node2 starting at {address}")
 
-def node2(port: int) -> None:
-    """
-    Start a node2, connects to another node, start and waits the federated learning process to finish.
+    node = Node(
+        LightningModel(MLP()),
+        P2PFLDataset.from_huggingface("p2pfl/MNIST"),
+        address=address,
+        learner=LightningLearner
+    )
 
-    Args:
-        port: The port to connect.
-
-    """
-    node = Node(LightningModel(MLP()), P2PFLDataset.from_huggingface("p2pfl/MNIST"), address="127.0.0.1", learner=LightningLearner)
     node.start()
-    node.connect(f"127.0.0.1:{port}")
+
+    print(f"🔗 Connecting to {connect_to}")
+    node.connect(connect_to)
     time.sleep(4)
 
-    print("Start learning")
+    print("🚀 Start learning")
     node.set_start_learning(rounds=2, epochs=1)
-
-    # Wait 4 results
 
     while True:
         time.sleep(1)
-
         if node.state.round is None:
             break
 
+    print("🛑 Node2 stopping")
     node.stop()
 
-
 if __name__ == "__main__":
-    # Get arguments
     args = __get_args()
-
-    # Run node2
-    node2(args.port)
+    node2(args.host, args.port, args.connect)
