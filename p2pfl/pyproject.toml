@@ -1,0 +1,14 @@
+[tool.poetry]
+name = "p2pfl"
+version = "0.4.0"
+description = "A p2p federated learning framework"
+authors = ["Pedro Guijas <pguijas@gmail.com>"]
+license = "GPL-3.0-only"
+packages = [{ include = "p2pfl" }]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

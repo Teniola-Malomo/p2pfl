@@ -1,0 +1,21 @@
+[project]
+name = "aegis-api"
+version = "0.1.0"
+description = "FastAPI REST API for exposing federated node data from the P2PFL framework"
+authors = [
+    {name = "Teniola Malomo",email = "teniola.malomo2@mail.dcu.ie"}
+]
+license = {text = "MIT"}
+readme = "README.md"
+requires-python = "^3.10"
+dependencies = [
+    "fastapi (>=0.115.12,<0.116.0)",
+    "uvicorn (>=0.34.0,<0.35.0)",
+    "p2pfl @ file:///Users/tmalomo/Dev/p2pfl",
+    "pydantic (>=2.10.6,<3.0.0)"
+]
+
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
