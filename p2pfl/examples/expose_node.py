@@ -12,10 +12,23 @@
 
 
 from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
 from datetime import datetime
 import socket
 
 app = FastAPI()
+
+app = FastAPI()
+
+# Allow frontend on localhost:5173 to call this API
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:5173"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 
 # Maps IP addresses to logical IDs and names
 IP_NODE_MAP = {
