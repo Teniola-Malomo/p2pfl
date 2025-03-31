@@ -33,6 +33,8 @@ RUN poetry run pip install torchmetrics==1.4.0.post0 pytorch-lightning==1.9.5
 
 RUN pip install "p2pfl[torch]"
 
+RUN pip install uvicorn fastapi
+
 # Expose the default port
 EXPOSE 5001
 

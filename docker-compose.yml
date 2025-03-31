@@ -8,11 +8,13 @@ services:
     networks:
       p2pfl-net:
         ipv4_address: 172.20.0.2
+    ports:
+    - "8001:8000"
     command: >
-      python p2pfl/examples/node1.py
-      --host 172.20.0.2
-      --port 5001
-      --wait_peers 2
+      sh -c "
+        python p2pfl/examples/node1.py --host 172.20.0.2 --port 5001 --wait_peers 2 &
+        uvicorn p2pfl.examples.expose_node:app --host 0.0.0.0 --port 8000
+      "
 
   node2:
     image: p2pfl-deploy
@@ -23,11 +25,13 @@ services:
     networks:
       p2pfl-net:
         ipv4_address: 172.20.0.3
+    ports:
+      - "8002:8000"
     command: >
-      python p2pfl/examples/node2.py
-      --host 172.20.0.3
-      --port 5002
-      --connect 172.20.0.2:5001
+      sh -c "
+        python p2pfl/examples/node2.py --host 172.20.0.3 --port 5002 --connect 172.20.0.2:5001 &
+        uvicorn p2pfl.examples.expose_node:app --host 0.0.0.0 --port 8000
+      "
 
   node3:
     image: p2pfl-deploy
@@ -38,11 +42,13 @@ services:
     networks:
       p2pfl-net:
         ipv4_address: 172.20.0.4
+    ports:
+      - "8003:8000"
     command: >
-      python p2pfl/examples/node3.py
-      --host 172.20.0.4
-      --port 5003
-      --connect 172.20.0.2:5001
+      sh -c "
+        python p2pfl/examples/node3.py --host 172.20.0.4 --port 5003 --connect 172.20.0.2:5001 &
+        uvicorn p2pfl.examples.expose_node:app --host 0.0.0.0 --port 8000
+      "
 
 networks:
   p2pfl-net:
