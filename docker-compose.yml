@@ -12,7 +12,6 @@ services:
     - "8001:8000"
     command: >
       sh -c "
-        python p2pfl/examples/node1.py --host 172.20.0.2 --port 5001 --wait_peers 2 &
         uvicorn p2pfl.examples.expose_node:app --host 0.0.0.0 --port 8000
       "
 
