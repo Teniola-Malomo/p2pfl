@@ -18,8 +18,6 @@ import socket
 
 app = FastAPI()
 
-app = FastAPI()
-
 # Allow frontend on localhost:5173 to call this API
 app.add_middleware(
     CORSMiddleware,
@@ -28,7 +26,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
 
 # Maps IP addresses to logical IDs and names
 IP_NODE_MAP = {
@@ -56,3 +53,29 @@ def get_node_info():
         "created_at": created_at,
         "last_seen": datetime.utcnow().isoformat(),
     }
+
+
+
+# from p2pfl.management.logger import logger
+
+# @app.get("/metrics")
+# def get_all_metrics():
+#     return {
+#         "local": logger.get_local_logs(),
+#         "global": logger.get_global_logs()
+#     }
+
+# @app.get("/metrics/{experiment}")
+# def get_experiment_metrics(experiment: str):
+#     return {
+#         "local": logger.local_metrics.get_experiment_logs(experiment),
+#         "global": logger.global_metrics.get_experiment_logs(experiment)
+#     }
+
+# @app.get("/metrics/{experiment}/round/{round}")
+# def get_experiment_round_metrics(experiment: str, round: int):
+#     return logger.local_metrics.get_experiment_round_logs(experiment, round)
+
+# @app.get("/metrics/{experiment}/round/{round}/node/{node}")
+# def get_experiment_round_node_metrics(experiment: str, round: int, node: str):
+#     return logger.local_metrics.get_experiment_round_node_logs(experiment, round, node)
