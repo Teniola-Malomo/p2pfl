@@ -9,6 +9,7 @@ from fastapi.responses import JSONResponse, StreamingResponse
 from queue import Queue, Empty
 import uvicorn
 import logging
+import grpc
 
 from p2pfl.learning.dataset.p2pfl_dataset import P2PFLDataset
 from p2pfl.learning.frameworks.pytorch.lightning_learner import LightningLearner
@@ -108,22 +109,55 @@ def get_node_info():
 @app.get("/neighbors")
 def get_neighbors():
     neighbors = node.get_neighbors()
+    return {"neighbors": list(neighbors.keys())}
+
+from datetime import datetime
+import grpc
+
+@app.get("/communication")
+def communication_summary():
+    neighbors = node.get_neighbors()
     detailed = {}
+
+    state_mapping = {
+        grpc.ChannelConnectivity.IDLE: "IDLE",
+        grpc.ChannelConnectivity.CONNECTING: "CONNECTING",
+        grpc.ChannelConnectivity.READY: "READY",
+        grpc.ChannelConnectivity.TRANSIENT_FAILURE: "TRANSIENT_FAILURE",
+        grpc.ChannelConnectivity.SHUTDOWN: "SHUTDOWN",
+    }
 
     for addr, (channel, stub, timestamp) in neighbors.items():
         try:
-            # This gives some meaningful internal state of the gRPC channel
-            channel_state = channel.get_state(True) if hasattr(channel, "get_state") else "Unknown"
-            detailed[addr] = {
-                "channel_type": str(type(channel)),
-                "stub_type": str(type(stub)),
-                "last_contact": timestamp,
-                "channel_state": str(channel_state),
-            }
-        except Exception as e:
-            detailed[addr] = {"error": str(e)}
+            # Detect connection type
+            stub_module = stub.__class__.__module__
+            connection_type = "gRPC" if "grpc" in stub_module else stub_module.split('.')[0]
 
-    return {"neighbors": detailed}
+            # Detect channel state
+            if hasattr(channel, "get_state"):
+                grpc_state = channel.get_state(True)
+                channel_state = state_mapping.get(grpc_state, grpc_state.name if hasattr(grpc_state, "name") else str(grpc_state))
+            else:
+                channel_state = "Connecting"
+
+            detailed[addr] = {
+                "connection_type": connection_type,
+                "channel": type(channel).__name__,
+                "stub": type(stub).__name__,
+                "last_contact": timestamp,
+                "last_contact_human": datetime.fromtimestamp(timestamp).isoformat(),
+                "channel_state": channel_state
+            }
+
+        except Exception as e:
+            detailed[addr] = {
+                "error": str(e),
+                "connection_type": "Unknown",
+                "channel_state": "Unavailable"
+            }
+
+    return {"communications": detailed}
+
 
 @app.get("/training-status")
 def get_training_status():
