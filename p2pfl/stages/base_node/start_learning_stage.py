@@ -63,11 +63,11 @@ class StartLearningStage(Stage):
         begin = time.time()
 
         # Wait and gossip model inicialization
-        logger.info(state.addr, "⏳ Waiting initialization.")
+        logger.info(state.addr, "Waiting initialization.")
         state.model_initialized_lock.acquire()
         # Communicate Initialization
         communication_protocol.broadcast(communication_protocol.build_msg(ModelInitializedCommand.get_name()))
-        logger.info(state.addr, "🗣️ Gossiping model initialization.")
+        logger.info(state.addr, "Gossiping model initialization.")
         StartLearningStage.__gossip_model(state, communication_protocol, learner)
 
         # Wait to guarantee new connection heartbeats convergence

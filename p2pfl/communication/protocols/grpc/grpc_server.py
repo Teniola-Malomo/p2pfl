@@ -172,7 +172,7 @@ class GrpcServer(node_pb2_grpc.NodeServicesServicer):
         if request.HasField("message") and not self.__gossiper.check_and_set_processed(request.message.hash):
             """
             if request.cmd != "beat" or (not Settings.EXCLUDE_BEAT_LOGS and request.source == "beat"):
-                logger.debug(self.addr, f"🙅 Message already processed: {request.cmd} (id {request.message.hash})")
+                logger.debug(self.addr, f"Message already processed: {request.cmd} (id {request.message.hash})")
             """
             return node_pb2.ResponseMessage()
 
@@ -180,7 +180,7 @@ class GrpcServer(node_pb2_grpc.NodeServicesServicer):
         if request.cmd != "beat" or (not Settings.EXCLUDE_BEAT_LOGS and request.cmd == "beat"):
             logger.debug(
                 self.addr,
-                f"📫 {request.cmd.upper()} received from {request.source}",
+                f"{request.cmd.upper()} received from {request.source}",
             )
         if request.cmd in self.__commands:
             try:

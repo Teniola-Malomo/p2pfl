@@ -66,7 +66,7 @@ class TrainStage(Stage):
             check_early_stop(state)
 
             # Train
-            logger.info(state.addr, "🏋️‍♀️ Training...")
+            logger.info(state.addr, "Training...")
             learner.fit()
 
             check_early_stop(state)
@@ -101,12 +101,12 @@ class TrainStage(Stage):
 
     @staticmethod
     def __evaluate(state: NodeState, learner: Learner, communication_protocol: CommunicationProtocol) -> None:
-        logger.info(state.addr, "🔬 Evaluating...")
+        logger.info(state.addr, "Evaluating...")
         results = learner.evaluate()
-        logger.info(state.addr, f"📈 Evaluated. Results: {results}")
+        logger.info(state.addr, f"Evaluated. Results: {results}")
         # Send metrics
         if len(results) > 0:
-            logger.info(state.addr, "📢 Broadcasting metrics.")
+            logger.info(state.addr, "Broadcasting metrics.")
             flattened_metrics = [str(item) for pair in results.items() for item in pair]
             communication_protocol.broadcast(
                 communication_protocol.build_msg(

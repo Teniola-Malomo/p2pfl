@@ -150,7 +150,7 @@ class InMemoryServer:
                 ttl = request["ttl"]
                 logger.debug(
                     self.addr,
-                    f"📫 {cmd} received from {source} ({ttl=})",
+                    f"{cmd} received from {source} ({ttl=})",
                 )
             # Gossip
             if request["ttl"] > 0:

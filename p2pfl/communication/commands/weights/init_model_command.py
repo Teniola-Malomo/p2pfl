@@ -78,7 +78,7 @@ class InitModelCommand(Command):
                 self.learner.set_model(weights)
                 # Release lock
                 self.state.model_initialized_lock.release()
-                logger.info(self.state.addr, "🤖 Model Weights Initialized")
+                logger.info(self.state.addr, "Model Weights Initialized")
 
             # Warning: these stops can cause a denegation of service attack
             except DecodingParamsError:

@@ -358,7 +358,7 @@ class Node:
 
         if self.state.round is None:
             # Broadcast start Learning
-            logger.info(self.addr, "🚀 Broadcasting start learning...")
+            logger.info(self.addr, "Broadcasting start learning...")
             self._communication_protocol.broadcast(
                 self._communication_protocol.build_msg(StartLearningCommand.get_name(), [str(rounds), str(epochs)])
             )

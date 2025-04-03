@@ -64,7 +64,7 @@ class InMemoryNeighbors(Neighbors):
             logger.debug(self.self_addr, f"🔍 Found node {addr}")
             return self.__build_non_direct_neighbor(addr)
         else:
-            logger.info(self.self_addr, f"🤝 Adding {addr}")
+            logger.info(self.self_addr, f"Adding {addr}")
             return self.__build_direct_neighbor(addr, handshake_msg)
 
     def __build_direct_neighbor(self, addr: str, handshake_msg: bool) -> Tuple[None, Optional[str], float]:
